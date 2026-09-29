@@ -35,15 +35,17 @@ jobs:
   deploy:
     name: Deploy to Railway
     needs: [test, build]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && secrets.RAILWAY_TOKEN != ''
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - name: Deploy
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        if: env.RAILWAY_TOKEN != ''
         run: npx --yes @railway/cli up --service agent --detach
       - name: Smoke test
+        if: env.RAILWAY_TOKEN != ''
         run: |
           sleep 45
           curl -fsS "${{ vars.PUBLIC_URL }}/health"
