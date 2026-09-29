@@ -1,0 +1,49 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run checkpoints that do not require a live cloud deployment
+        env:
+          AGENT_API_KEY: ci-dummy
+          REDIS_URL: "fake://"
+        run: pytest tests --ignore=tests/test_cp5.py --ignore=tests/test_bonus_cicd.py
+
+  build:
+    name: Build Docker image
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t day12-agent:ci .
+
+  deploy:
+    name: Deploy to Railway
+    needs: [test, build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && secrets.RAILWAY_TOKEN != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: npx --yes @railway/cli up --service agent --detach
+      - name: Smoke test
+        run: |
+          sleep 45
+          curl -fsS "${{ vars.PUBLIC_URL }}/health"
