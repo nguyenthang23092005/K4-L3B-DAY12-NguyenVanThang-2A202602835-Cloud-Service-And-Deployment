@@ -4,7 +4,7 @@
 
 | Mục | Nội dung |
 |-----|----------|
-| Họ và tên | Nguyễn Văn Thắng |
+| Họ và tên | Nguyễn Văn Thăng |
 | Mã học viên | 2A202602835 |
 | Repo | https://github.com/nguyenthang23092005/K4-L3B-DAY12-NguyenVanThang-2A202602835-Cloud-Service-And-Deployment |
 
