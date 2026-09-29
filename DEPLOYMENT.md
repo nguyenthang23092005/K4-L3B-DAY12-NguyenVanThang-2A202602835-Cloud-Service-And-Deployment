@@ -56,5 +56,5 @@ curl -i -X POST "$URL/ask" \
 
 ## Ảnh Chụp Màn Hình
 
-- `screenshots/health.png` — kết quả public health endpoint.
-- `screenshots/dashboard.png` — cần chụp từ Railway dashboard đã đăng nhập.
+- ![alt text](images/image.png) 
+- ![alt text](images/image-1.png) 
